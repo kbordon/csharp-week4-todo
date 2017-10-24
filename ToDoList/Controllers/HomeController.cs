@@ -71,11 +71,5 @@ namespace ToDoList.Controllers
             return View("CategoryDetail", model);
         }
 
-        // [HttpGet("/tasks/{id}")]
-        // public ActionResult TaskDetail(int id)
-        // {
-        //     Task task = Task.Find(id);
-        //     return View(task);
-        // }
     }
 }
