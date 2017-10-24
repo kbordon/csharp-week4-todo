@@ -63,7 +63,9 @@ namespace ToDoList.Controllers
             Dictionary<string, object> model = new Dictionary<string, object>();
             Category selectedCategory = Category.Find(Int32.Parse(Request.Form["category-id"]));
             string taskDescription = Request.Form["task-description"];
-            Task newTask = new Task(taskDescription, Int32.Parse(Request.Form["category-id"]), DateTime.Parse(Request.Form["task-due-date"]), Request.Form["task-due-date"]);
+            DateTime dueDate = Convert.ToDateTime(Request.Form["task-due-date"]);
+            string[] newDueDate = dueDate.GetDateTimeFormats('g');
+            Task newTask = new Task(taskDescription, Int32.Parse(Request.Form["category-id"]), dueDate, newDueDate[0]);
             newTask.Save();
             List<Task> categoryTasks = selectedCategory.GetTasks();
             model.Add("tasks", categoryTasks);
