@@ -1,9 +1,16 @@
 <h3>Here all the tasks in this category</h3>
-<ol>
-@foreach (var task in @Model["tasks"])
+@if(Model.Count == 1)
 {
-    <li>@task.GetDescription() at @task.GetDueDate()</li>
+  <p>How dare you, please enter a legit task</p>
 }
-</ol>
+else
+{
+  <ol>
+  @foreach (var task in @Model["tasks"])
+  {
+    <li>@task.GetDescription() at @task.GetDueDate()</li>
+  }
+  </ol>
+}
 <p><a href='/categories/@Model["category"].GetId()/tasks/new'>Add a new task</a></p>
 <p><a href='/'>Return to Main Page</a></p>

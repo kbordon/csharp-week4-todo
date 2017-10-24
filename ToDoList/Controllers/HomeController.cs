@@ -60,8 +60,9 @@ namespace ToDoList.Controllers
         [HttpPost("/tasks")]
         public ActionResult AddTask()
         {
-            Dictionary<string, object> model = new Dictionary<string, object>();
-            Category selectedCategory = Category.Find(Int32.Parse(Request.Form["category-id"]));
+          Dictionary<string, object> model = new Dictionary<string, object>();
+          Category selectedCategory = Category.Find(Int32.Parse(Request.Form["category-id"]));
+          try{
             string taskDescription = Request.Form["task-description"];
             DateTime dueDate = Convert.ToDateTime(Request.Form["task-due-date"]);
             string[] newDueDate = dueDate.GetDateTimeFormats('g');
@@ -71,6 +72,12 @@ namespace ToDoList.Controllers
             model.Add("tasks", categoryTasks);
             model.Add("category", selectedCategory);
             return View("CategoryDetail", model);
+          }
+          catch(Exception)
+          {
+            model.Add("category", selectedCategory);
+            return View("CategoryDetail", model);
+          }
         }
 
     }
