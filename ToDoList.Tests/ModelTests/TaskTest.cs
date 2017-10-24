@@ -11,7 +11,7 @@ namespace ToDoList.Tests
     {
         public TaskTests()
         {
-            DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=3306;database=todo_test;";
+            DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=todo_test;";
         }
         public void Dispose()
         {
