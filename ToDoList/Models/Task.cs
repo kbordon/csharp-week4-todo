@@ -9,11 +9,15 @@ namespace ToDoList.Models
         private string _description;
         private int _id;
         private int _categoryId;
+        private DateTime _dueDate;
+        private string _stringDueDate;
 
-        public Task(string description, int categoryId, int id = 0)
+        public Task(string description, int categoryId, DateTime dueDate, string stringDueDate, int id = 0)
         {
             _description = description;
             _categoryId = categoryId;
+            _dueDate = dueDate;
+            _stringDueDate = stringDueDate;
             _id = id;
         }
 
@@ -37,6 +41,11 @@ namespace ToDoList.Models
              return this.GetDescription().GetHashCode();
         }
 
+        public string GetDueDate()
+        {
+          return _stringDueDate;
+        }
+
         public string GetDescription()
         {
             return _description;
@@ -55,7 +64,7 @@ namespace ToDoList.Models
             conn.Open();
 
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"INSERT INTO tasks (description, category_id) VALUES (@description, @category_id);";
+            cmd.CommandText = @"INSERT INTO tasks (description, category_id, due_date, due_date_string) VALUES (@description, @category_id, @due_date, @due_date_string);";
 
             MySqlParameter description = new MySqlParameter();
             description.ParameterName = "@description";
@@ -67,6 +76,15 @@ namespace ToDoList.Models
             categoryId.Value = this._categoryId;
             cmd.Parameters.Add(categoryId);
 
+            MySqlParameter dueDate = new MySqlParameter();
+            dueDate.ParameterName = "@due_date";
+            dueDate.Value = this._dueDate;
+            cmd.Parameters.Add(dueDate);
+
+            MySqlParameter dueDateString = new MySqlParameter();
+            dueDateString.ParameterName = "@due_date_string";
+            dueDateString.Value = this._stringDueDate;
+            cmd.Parameters.Add(dueDateString);
 
             cmd.ExecuteNonQuery();
             _id = (int) cmd.LastInsertedId;
@@ -76,6 +94,8 @@ namespace ToDoList.Models
                 conn.Dispose();
             }
         }
+
+
 
         public static List<Task> GetAll()
         {
@@ -90,7 +110,9 @@ namespace ToDoList.Models
               int taskId = rdr.GetInt32(0);
               string taskDescription = rdr.GetString(1);
               int taskCategoryId = rdr.GetInt32(2);
-              Task newTask = new Task(taskDescription, taskCategoryId, taskId);
+              string taskDueDate = rdr.GetString(4);
+              DateTime dummyDateTime = new DateTime();
+              Task newTask = new Task(taskDescription, taskCategoryId, dummyDateTime, taskDueDate, taskId);
               allTasks.Add(newTask);
             }
             conn.Close();
@@ -98,6 +120,7 @@ namespace ToDoList.Models
             {
                 conn.Dispose();
             }
+            Console.WriteLine(allTasks[0].GetDueDate());
             return allTasks;
         }
         public static Task Find(int id)
@@ -116,14 +139,18 @@ namespace ToDoList.Models
             int taskId = 0;
             string taskName = "";
             int taskCategoryId = 0;
+            string taskDueDate = "";
+            DateTime dummyDateTime = new DateTime();
 
             while(rdr.Read())
             {
               taskId = rdr.GetInt32(0);
               taskName = rdr.GetString(1);
               taskCategoryId = rdr.GetInt32(2);
+              taskDueDate = rdr.GetString(4);
+
             }
-            Task newTask = new Task(taskName, taskCategoryId, taskId);
+            Task newTask = new Task(taskName, taskCategoryId, dummyDateTime, taskDueDate, taskId);
             conn.Close();
             if (conn != null)
             {

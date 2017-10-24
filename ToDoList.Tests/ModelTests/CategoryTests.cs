@@ -79,14 +79,10 @@ namespace ToDoList.Tests
             //Assert
             Assert.AreEqual(testCategory, foundCategory);
         }
-
-
-
         public void Dispose()
         {
             Task.DeleteAll();
             Category.DeleteAll();
         }
-
     }
 }

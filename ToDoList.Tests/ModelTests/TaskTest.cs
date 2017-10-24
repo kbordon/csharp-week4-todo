@@ -23,8 +23,9 @@ namespace ToDoList.Tests
         public void Equals_OverrideTrueForSameDescription_Task()
         {
           //Arrange, Act
-          Task firstTask = new Task("Mow the lawn", 1);
-          Task secondTask = new Task("Mow the lawn", 1);
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task firstTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
+          Task secondTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
 
           //Assert
           Assert.AreEqual(firstTask, secondTask);
@@ -34,7 +35,8 @@ namespace ToDoList.Tests
         public void Save_SavesTaskToDatabase_TaskList()
         {
           //Arrange
-          Task testTask = new Task("Mow the lawn", 1);
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -48,7 +50,8 @@ namespace ToDoList.Tests
         public void Save_DatabaseAssignsIdToObject_Id()
         {
           //Arrange
-          Task testTask = new Task("Mow the lawn", 1);
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -65,7 +68,8 @@ namespace ToDoList.Tests
         public void Find_FindsTaskInDatabase_Task()
         {
           //Arrange
-          Task testTask = new Task("Mow the lawn", 1);
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", 1, newDateTime, newDateTime.ToString());
           testTask.Save();
 
           //Act
@@ -81,13 +85,34 @@ namespace ToDoList.Tests
           Category testCategory = new Category("Household chores");
           testCategory.Save();
 
-          Task firstTask = new Task("Mow the lawn", testCategory.GetId());
+          DateTime newDateTime = new DateTime(2016,12,31);
+          DateTime newSecondDateTime = new DateTime(2017,1,1);
+          Task firstTask = new Task("Mow the lawn", testCategory.GetId(), newDateTime, newDateTime.ToString());
           firstTask.Save();
-          Task secondTask = new Task("Do the dishes", testCategory.GetId());
+          Task secondTask = new Task("Do the dishes", testCategory.GetId(), newSecondDateTime, newSecondDateTime.ToString());
           secondTask.Save();
 
 
           List<Task> testTaskList = new List<Task> {firstTask, secondTask};
+          List<Task> resultTaskList = testCategory.GetTasks();
+
+          CollectionAssert.AreEqual(testTaskList, resultTaskList);
+        }
+
+        [TestMethod]
+        public void GetTasks_MakeSureListOrderedByDate_TaskList()
+        {
+          Category testCategory = new Category("Household chores");
+          testCategory.Save();
+
+          DateTime newDateTime = new DateTime(2016,12,31);
+          DateTime newSecondDateTime = new DateTime(2015,1,1);
+          Task firstTask = new Task("Mow the lawn", testCategory.GetId(), newDateTime, newDateTime.ToString());
+          firstTask.Save();
+          Task secondTask = new Task("Do the dishes", testCategory.GetId(), newSecondDateTime, newSecondDateTime.ToString());
+          secondTask.Save();
+
+          List<Task> testTaskList = new List<Task> {secondTask, firstTask};
           List<Task> resultTaskList = testCategory.GetTasks();
 
           CollectionAssert.AreEqual(testTaskList, resultTaskList);
