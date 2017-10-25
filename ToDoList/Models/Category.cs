@@ -15,9 +15,6 @@ namespace ToDoList.Models
         {
             _name = categoryName;
             _id = id;
-            // _instances.Add(this);
-            // _id = _instances.Count;
-            // _tasks = new List<Task>{};
         }
 
         public override bool Equals(System.Object otherCategory)
@@ -173,25 +170,5 @@ namespace ToDoList.Models
             }
             return allCategoryTasks;
         }
-        // public static List<Category> GetAll()
-        // {
-        //     return _instances;
-        // }
-        // public static void Clear()
-        // {
-        //     _instances.Clear();
-        // }
-        // public static Category Find(int searchId)
-        // {
-        //     return _instances[searchId-1];
-        // }
-        // public List<Task> GetTasks()
-        // {
-        //     return _tasks;
-        // }
-        // public void AddTask(Task task)
-        // {
-        //     _tasks.Add(task);
-        // }
     }
 }

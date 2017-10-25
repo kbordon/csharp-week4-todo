@@ -64,7 +64,7 @@ namespace ToDoList.Models
             conn.Open();
 
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"INSERT INTO tasks (description, category_id, due_date, due_date_string) VALUES (@description, @category_id, @due_date, @due_date_string);";
+            cmd.CommandText = @"INSERT INTO tasks (description, category_id, due_date, string_due_date) VALUES (@description, @category_id, @due_date, @string_due_date);";
 
             MySqlParameter description = new MySqlParameter();
             description.ParameterName = "@description";
@@ -82,7 +82,7 @@ namespace ToDoList.Models
             cmd.Parameters.Add(dueDate);
 
             MySqlParameter dueDateString = new MySqlParameter();
-            dueDateString.ParameterName = "@due_date_string";
+            dueDateString.ParameterName = "@string_due_date";
             dueDateString.Value = this._stringDueDate;
             cmd.Parameters.Add(dueDateString);
 
