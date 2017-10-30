@@ -162,6 +162,29 @@ namespace ToDoList.Tests
           CollectionAssert.AreEqual(testCategoryTasks, resultCategoryTasks);
         }
 
+        [TestMethod]
+        public void GetAllOrderedByDate_RetrievesAllTasksInChronologicalOrder_List()
+        {
+            // Arrange
+            DateTime newDateTime = new DateTime(2018,12,31);
+            Task testTask = new Task("Mow the lawn", newDateTime);
+            testTask.Save();
+
+            DateTime newDateTime2 = new DateTime(2017,04,15);
+            Task testTask2 = new Task("Wash the car", newDateTime2);
+            testTask2.Save();
+
+            DateTime newDateTime3 = new DateTime(2017,04,01);
+            Task testTask3 = new Task("Take out trash", newDateTime3);
+            testTask3.Save();
+
+            //Act
+            List<Task> orderedList = Task.GetAllOrderedByDate();
+            List<Task> expectedList = new List<Task>{testTask3, testTask2, testTask};
+
+            CollectionAssert.AreEqual(orderedList, expectedList);
+        }
+
         // [TestMethod]
         // public void GetTasks_RetrievesAllTasksWithCategory_TaskList()
         // {

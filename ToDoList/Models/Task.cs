@@ -182,8 +182,32 @@ namespace ToDoList.Models
             {
                 conn.Dispose();
             }
-            Console.WriteLine(allTasks[0].GetDueDate());
             return allTasks;
+        }
+
+        public static List<Task> GetAllOrderedByDate()
+        {
+            List<Task> orderedTasks = new List<Task>{};
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"SELECT * FROM tasks ORDER BY due_date;";
+
+            var rdr = cmd.ExecuteReader() as MySqlDataReader;
+            while(rdr.Read())
+            {
+                int taskId = rdr.GetInt32(0);
+                string taskDescription = rdr.GetString(1);
+                DateTime taskDueDate = DateTime.Parse(rdr.GetString(2));
+                Task orderedTask = new Task(taskDescription, taskDueDate, taskId);
+                orderedTasks.Add(orderedTask);
+            }
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+            return orderedTasks;
         }
 
         public static Task Find(int id)
