@@ -13,6 +13,77 @@ namespace ToDoList.Tests
             DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=todo_test;";
         }
 
+        [TestMethod]
+        public void GetTasks_ReturnsAllCategoryTasks_TaskList()
+        {
+          //Arrange
+          Category testCategory = new Category("Household chores");
+          testCategory.Save();
+
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          testTask.Save();
+
+          Task testTask2 = new Task("Water the garden", newDateTime, newDateTime.ToString());
+          testTask2.Save();
+
+          //Act
+          testCategory.AddTask(testTask);
+          List<Task> savedTasks = testCategory.GetTasks();
+          List<Task> testList = new List<Task> {testTask};
+
+          //Assert
+          CollectionAssert.AreEqual(testList, savedTasks);
+        }
+
+        [TestMethod]
+        public void Delete_DeletesCategoryAssociationsFromDatabase_CategoryList()
+        {
+          //Arrange
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          testTask.Save();
+
+          string testName = "Home stuff";
+          Category testCategory = new Category(testName);
+          testCategory.Save();
+
+          //Act
+          testCategory.AddTask(testTask);
+          testCategory.Delete();
+
+          List<Category> resultTaskCategories = testTask.GetCategories();
+          List<Category> testTaskCategories = new List<Category> {};
+
+          //Assert
+          CollectionAssert.AreEqual(testTaskCategories, resultTaskCategories);
+        }
+
+        [TestMethod]
+        public void Test_AddTask_AddsTaskToCategory()
+        {
+          //Arrange
+          Category testCategory = new Category("Household chores");
+          testCategory.Save();
+
+          DateTime newDateTime = new DateTime(2016,12,31);
+          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          testTask.Save();
+
+          Task testTask2 = new Task("Water the garden", newDateTime, newDateTime.ToString());
+          testTask2.Save();
+
+          //Act
+          testCategory.AddTask(testTask);
+          testCategory.AddTask(testTask2);
+
+          List<Task> result = testCategory.GetTasks();
+          List<Task> testList = new List<Task>{testTask, testTask2};
+
+          //Assert
+          CollectionAssert.AreEqual(testList, result);
+        }
+
        [TestMethod]
        public void GetAll_CategoriesEmptyAtFirst_0()
        {

@@ -8,17 +8,38 @@ namespace ToDoList.Models
     {
         private string _description;
         private int _id;
-        private int _categoryId;
         private DateTime _dueDate;
         private string _stringDueDate;
+        private bool _completed = false;
 
-        public Task(string description, int categoryId, DateTime dueDate, string stringDueDate, int id = 0)
+        public Task(string description, DateTime dueDate, string stringDueDate, int id = 0)
         {
             _description = description;
-            _categoryId = categoryId;
             _dueDate = dueDate;
             _stringDueDate = stringDueDate;
             _id = id;
+        }
+
+        public void SetTaskCompleted()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"UPDATE tasks SET completed = true WHERE id = @searchId;";
+
+          MySqlParameter searchId = new MySqlParameter();
+          searchId.ParameterName = "@searchId";
+          searchId.Value = this._id;
+          cmd.Parameters.Add(searchId);
+
+          cmd.ExecuteNonQuery();
+          this._completed = true;
+
+          conn.Close();
+          if (conn != null)
+          {
+            conn.Dispose();
+          }
         }
 
         public override bool Equals(System.Object otherTask)
@@ -32,8 +53,7 @@ namespace ToDoList.Models
              Task newTask = (Task) otherTask;
              bool idEquality = this.GetId() == newTask.GetId();
              bool descriptionEquality = this.GetDescription() == newTask.GetDescription();
-             bool categoryEquality = this.GetCategoryId() == newTask.GetCategoryId();
-             return (idEquality && descriptionEquality && categoryEquality);
+             return (idEquality && descriptionEquality);
            }
         }
         public override int GetHashCode()
@@ -54,27 +74,80 @@ namespace ToDoList.Models
         {
             return _id;
         }
-        public int GetCategoryId()
+        public bool GetCompleted()
         {
-            return _categoryId;
+          return _completed;
         }
+
+        public List<Category> GetCategories()
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"SELECT categories.* FROM tasks JOIN categories_tasks ON (tasks.id = categories_tasks.task_id) JOIN categories ON (categories_tasks.category_id = categories.id) WHERE tasks.id = @taskId;";
+
+          // @"SELECT category_id FROM categories_tasks WHERE task_id = @taskId;";
+
+          MySqlParameter taskIdParameter = new MySqlParameter();
+          taskIdParameter.ParameterName = "@taskId";
+          taskIdParameter.Value = _id;
+          cmd.Parameters.Add(taskIdParameter);
+
+          var rdr = cmd.ExecuteReader() as MySqlDataReader;
+
+          List<Category> categories = new List<Category> {};
+          while(rdr.Read())
+          {
+            int returnId = rdr.GetInt32(0);
+            string returnName = rdr.GetString(1);
+            Category returnedCategory = new Category(returnName, returnId);
+            categories.Add(returnedCategory);
+          }
+          conn.Close();
+          if (conn != null)
+          {
+            conn.Dispose();
+          }
+          return categories;
+        }
+
+        public void AddCategory(Category newCategory)
+        {
+          MySqlConnection conn = DB.Connection();
+          conn.Open();
+          var cmd = conn.CreateCommand() as MySqlCommand;
+          cmd.CommandText = @"INSERT INTO categories_tasks (category_id, task_id) VALUES (@CategoryId, @TaskId);";
+
+          MySqlParameter category_id = new MySqlParameter();
+          category_id.ParameterName = "@CategoryId";
+          category_id.Value = newCategory.GetId();
+          cmd.Parameters.Add(category_id);
+
+          MySqlParameter task_id = new MySqlParameter();
+          task_id.ParameterName = "@TaskId";
+          task_id.Value = _id;
+          cmd.Parameters.Add(task_id);
+
+          cmd.ExecuteNonQuery();
+          conn.Close();
+          if (conn != null)
+          {
+              conn.Dispose();
+          }
+        }
+
         public void Save()
         {
             MySqlConnection conn = DB.Connection();
             conn.Open();
 
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"INSERT INTO tasks (description, category_id, due_date, string_due_date) VALUES (@description, @category_id, @due_date, @string_due_date);";
+            cmd.CommandText = @"INSERT INTO tasks (description, due_date, string_due_date) VALUES (@description,  @due_date, @string_due_date);";
 
             MySqlParameter description = new MySqlParameter();
             description.ParameterName = "@description";
             description.Value = this._description;
             cmd.Parameters.Add(description);
-
-            MySqlParameter categoryId = new MySqlParameter();
-            categoryId.ParameterName = "@category_id";
-            categoryId.Value = this._categoryId;
-            cmd.Parameters.Add(categoryId);
 
             MySqlParameter dueDate = new MySqlParameter();
             dueDate.ParameterName = "@due_date";
@@ -109,10 +182,10 @@ namespace ToDoList.Models
             {
               int taskId = rdr.GetInt32(0);
               string taskDescription = rdr.GetString(1);
-              int taskCategoryId = rdr.GetInt32(2);
-              string taskDueDate = rdr.GetString(4);
+
+              string taskDueDate = rdr.GetString(3);
               DateTime dummyDateTime = new DateTime();
-              Task newTask = new Task(taskDescription, taskCategoryId, dummyDateTime, taskDueDate, taskId);
+              Task newTask = new Task(taskDescription, dummyDateTime, taskDueDate, taskId);
               allTasks.Add(newTask);
             }
             conn.Close();
@@ -138,7 +211,6 @@ namespace ToDoList.Models
             var rdr = cmd.ExecuteReader() as MySqlDataReader;
             int taskId = 0;
             string taskName = "";
-            int taskCategoryId = 0;
             string taskDueDate = "";
             DateTime dummyDateTime = new DateTime();
 
@@ -146,11 +218,10 @@ namespace ToDoList.Models
             {
               taskId = rdr.GetInt32(0);
               taskName = rdr.GetString(1);
-              taskCategoryId = rdr.GetInt32(2);
-              taskDueDate = rdr.GetString(4);
+              taskDueDate = rdr.GetString(3);
 
             }
-            Task newTask = new Task(taskName, taskCategoryId, dummyDateTime, taskDueDate, taskId);
+            Task newTask = new Task(taskName, dummyDateTime, taskDueDate, taskId);
             conn.Close();
             if (conn != null)
             {
@@ -170,6 +241,27 @@ namespace ToDoList.Models
             if (conn != null)
             {
                 conn.Dispose();
+            }
+        }
+
+        public void Delete()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+
+            MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"DELETE FROM tasks WHERE id = @TaskId; DELETE FROM categories_tasks WHERE task_id = @TaskId;";
+
+            MySqlParameter taskIdParameter = new MySqlParameter();
+            taskIdParameter.ParameterName = "@TaskId";
+            taskIdParameter.Value = this.GetId();
+
+            cmd.Parameters.Add(taskIdParameter);
+            cmd.ExecuteNonQuery();
+
+            if (conn != null)
+            {
+              conn.Close();
             }
         }
     }
