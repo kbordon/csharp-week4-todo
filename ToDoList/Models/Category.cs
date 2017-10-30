@@ -185,9 +185,8 @@ namespace ToDoList.Models
           {
             int returnId = rdr.GetInt32(0);
             string returnDescription = rdr.GetString(1);
-            string returnDueDate = rdr.GetString(3);
-            DateTime dummyDateTime = new DateTime();
-            Task newTask = new Task(returnDescription, dummyDateTime, returnDueDate, returnId);
+            DateTime returnDueDate = DateTime.Parse(rdr.GetString(2));
+            Task newTask = new Task(returnDescription, returnDueDate, returnId);
             tasks.Add(newTask);
           }
           conn.Close();

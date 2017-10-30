@@ -24,7 +24,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           // Act
@@ -40,7 +40,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           Category testCategory = new Category("Home stuff");
@@ -61,7 +61,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           Category testCategory1 = new Category("Home stuff");
@@ -85,8 +85,8 @@ namespace ToDoList.Tests
         {
           //Arrange, Act
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task firstTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
-          Task secondTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task firstTask = new Task("Mow the lawn", newDateTime);
+          Task secondTask = new Task("Mow the lawn", newDateTime);
 
           //Assert
           Assert.AreEqual(firstTask, secondTask);
@@ -97,7 +97,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           //Act
@@ -112,7 +112,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           //Act
@@ -130,7 +130,7 @@ namespace ToDoList.Tests
         {
           //Arrange
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           //Act
@@ -148,7 +148,7 @@ namespace ToDoList.Tests
           testCategory.Save();
 
           DateTime newDateTime = new DateTime(2016,12,31);
-          Task testTask = new Task("Mow the lawn", newDateTime, newDateTime.ToString());
+          Task testTask = new Task("Mow the lawn", newDateTime);
           testTask.Save();
 
           //Act
